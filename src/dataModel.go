@@ -1,5 +1,14 @@
 package main
 
+import (
+	"sync"
+)
+
+type CacheMU struct {
+	Lock  sync.RWMutex
+	Cache AllData
+}
+
 type AllData struct {
 	Ip        []IpLocation
 	Locations []LocationsLanguage
