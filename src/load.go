@@ -28,13 +28,13 @@ func loadAllData(src string, dest string) (AllData, error) {
 
 	wg := &sync.WaitGroup{}
 
-	ipLocationChan, error1Chan := parseIpLocationAsync(wg, path.Join(pathFile, "IP-locations.csv"))
+	_, error1Chan := parseIpLocationAsync(wg, path.Join(pathFile, "IP-locations.csv"))
 
-	location1Chan, error2Chan := parseLocationAsync(wg, path.Join(pathFile, "Locations-FR.csv"), "FR")
+	_, error2Chan := parseLocationAsync(wg, path.Join(pathFile, "Locations-FR.csv"), "FR")
 
-	location2Chan, error3Chan := parseLocationAsync(wg, path.Join(pathFile, "Locations-EN.csv"), "EN")
+	_, error3Chan := parseLocationAsync(wg, path.Join(pathFile, "Locations-EN.csv"), "EN")
 
-	location3Chan, error4Chan := parseLocationAsync(wg, path.Join(pathFile, "Locations-ES.csv"), "ES")
+	_, error4Chan := parseLocationAsync(wg, path.Join(pathFile, "Locations-ES.csv"), "ES")
 
 	wg.Wait()
 
@@ -53,10 +53,10 @@ func loadAllData(src string, dest string) (AllData, error) {
 		return allData, err4
 	}
 
-	allData.Ip = <-ipLocationChan
+	/* allData.Ip = <-ipLocationChan
 	allData.Locations = append(allData.Locations, <-location1Chan)
 	allData.Locations = append(allData.Locations, <-location2Chan)
-	allData.Locations = append(allData.Locations, <-location3Chan)
+	allData.Locations = append(allData.Locations, <-location3Chan) */
 
 	return allData, nil
 }
@@ -129,12 +129,12 @@ func parseLocationAsync(wg *sync.WaitGroup, src string, language string) (chan L
 		defer close(resultChan)
 		defer close(errorChan)
 
-		result, err := parseLocation(src)
+		_, err := parseLocation(src)
 
 		if err != nil {
 			errorChan <- err
 		} else {
-			resultChan <- LocationsLanguage{Name: language, Locations: result}
+			//resultChan <- LocationsLanguage{Name: language, Locations: result}
 			errorChan <- nil
 		}
 	}(wg, src, language, resultChan, errorChan)
