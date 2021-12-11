@@ -1,15 +1,16 @@
 package main
 
-import (
-	"encoding/csv"
-	"os"
-	"path"
-	"sync"
+func findLocationInFile(uuid string, lang string) (Location, error) {
+	locate := Location{}
+	return locate, nil
+}
 
-	"github.com/mholt/archiver/v3"
-)
+func findIpInFile(ip string) (IpLocation, error) {
+	ipLoc := IpLocation{}
+	return ipLoc, nil
+}
 
-func loadAllData(src string, dest string) (AllData, error) {
+/* func loadAllData(src string, dest string) (AllData, error) {
 
 	pathFile := path.Join(dest, "IP-locations")
 
@@ -53,10 +54,10 @@ func loadAllData(src string, dest string) (AllData, error) {
 		return allData, err4
 	}
 
-	/* allData.Ip = <-ipLocationChan
+	allData.Ip = <-ipLocationChan
 	allData.Locations = append(allData.Locations, <-location1Chan)
 	allData.Locations = append(allData.Locations, <-location2Chan)
-	allData.Locations = append(allData.Locations, <-location3Chan) */
+	allData.Locations = append(allData.Locations, <-location3Chan)
 
 	return allData, nil
 }
@@ -134,7 +135,7 @@ func parseLocationAsync(wg *sync.WaitGroup, src string, language string) (chan L
 		if err != nil {
 			errorChan <- err
 		} else {
-			//resultChan <- LocationsLanguage{Name: language, Locations: result}
+			resultChan <- LocationsLanguage{Name: language, Locations: result}
 			errorChan <- nil
 		}
 	}(wg, src, language, resultChan, errorChan)
@@ -178,3 +179,4 @@ func parseLocation(src string) ([]Location, error) {
 
 	return toReturn, err
 }
+*/

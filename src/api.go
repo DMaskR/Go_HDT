@@ -39,6 +39,13 @@ func getLocationIP(cache *CacheMU) gin.HandlerFunc {
 		ip := c.Query("ip")
 		language := c.Query("lang")
 
+		if language != "EN" && language != "ES" && language != "FR" && language != "" {
+			c.JSON(400, gin.H{
+				"message": "Need valid language: EN, ES, FR or nothing",
+			})
+			return
+		}
+
 		if ip == "" {
 			c.JSON(400, gin.H{
 				"message": "Need Ip address in params",

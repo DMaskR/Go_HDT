@@ -1,8 +1,8 @@
 package main
 
 type IpLocationAPI struct {
-	Ip        string              `json:"id"`
-	Locations []LocationsLanguage `json:"infos"`
+	Ip        string                 `json:"id"`
+	Locations []LocationsLanguageAPI `json:"infos"`
 }
 
 type LocationsLanguageAPI struct {
