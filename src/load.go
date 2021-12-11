@@ -15,6 +15,27 @@ func findLocationInFile(uuid string, lang string) (Location, error) {
 			csvReader := csv.NewReader(f.ReadCloser)
 			csvReader.Comma = ';'
 
+			/* csvLines, err := csvReader.ReadAll()
+			if err != nil {
+				return err
+			}
+
+			for i, line := range csvLines {
+				if i == 0 {
+					continue
+				}
+
+				if uuid == line[0] {
+					locate.Uuid = line[0]
+					locate.Continent = line[1]
+					locate.Country = line[2]
+					locate.Region = line[3]
+					locate.Department = line[4]
+					locate.City = line[5]
+					return nil
+				}
+			} */
+
 			for err == nil {
 				csvLines, err := csvReader.Read()
 				if err == io.EOF {
