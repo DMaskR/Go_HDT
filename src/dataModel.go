@@ -5,13 +5,14 @@ import (
 )
 
 type CacheMU struct {
-	Lock  sync.RWMutex
-	Cache AllData
+	LockIP        sync.RWMutex
+	LockLocations sync.RWMutex
+	Cache         AllData
 }
 
 type AllData struct {
-	Ip        []IpLocation
-	Locations []LocationsLanguage
+	Ip        map[string]IpLocation
+	Locations map[string]LocationsLanguage
 }
 
 type IpLocation struct {
@@ -21,7 +22,7 @@ type IpLocation struct {
 
 type LocationsLanguage struct {
 	Name      string
-	Locations []Location
+	Locations map[string]Location
 }
 
 type Location struct {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"sync"
@@ -10,19 +9,24 @@ import (
 )
 
 func AllDataToCacheMu(data AllData) CacheMU {
-	return CacheMU{Lock: sync.RWMutex{}, Cache: data}
+	return CacheMU{LockIP: sync.RWMutex{}, LockLocations: sync.RWMutex{}, Cache: data}
 }
 
 func main() {
 
-	data, err := loadAllData("IP-locations.rar", "./")
+	allData := AllData{
+		Ip:        nil,
+		Locations: nil,
+	}
+
+	/* data, err := loadAllData("IP-locations.rar", "./")
 
 	if err != nil {
 		fmt.Println(err)
 		return
-	}
+	} */
 
-	cache := AllDataToCacheMu(data)
+	cache := AllDataToCacheMu(allData)
 
 	gin.DisableConsoleColor()
 

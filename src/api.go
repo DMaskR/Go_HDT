@@ -6,14 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func getIP(ip string, lang string) {
-
-}
-
 func getLocationIP(cache *CacheMU) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 		ip := c.Query("ip")
-		language := c.DefaultQuery("lang", "")
+		language := c.Query("lang")
 
 		if ip == "" {
 			c.JSON(400, gin.H{
@@ -29,7 +25,7 @@ func getLocationIP(cache *CacheMU) gin.HandlerFunc {
 				return
 			}
 
-			getIP(ipv4Net.String(), language)
+			getCacheIP(cache, ipv4Net.String(), language)
 		}
 	}
 
