@@ -6,6 +6,6 @@ type IpLocationAPI struct {
 }
 
 type LocationsLanguageAPI struct {
-	Name      string   `json:"lang"`
+	Name      string   `json:"language"`
 	Locations Location `json:"location"`
 }

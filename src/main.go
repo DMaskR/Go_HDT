@@ -19,13 +19,6 @@ func main() {
 		Locations: nil,
 	}
 
-	/* data, err := loadAllData("IP-locations.rar", "./")
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	} */
-
 	cache := AllDataToCacheMu(allData)
 
 	gin.DisableConsoleColor()

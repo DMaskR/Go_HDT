@@ -1,5 +1,9 @@
 package main
 
+import (
+	"sync"
+)
+
 func location(cache *CacheMU, uuid string, lang string) (LocationsLanguageAPI, error) {
 	locate := Location{}
 	value := LocationsLanguageAPI{Name: lang, Locations: locate}
@@ -24,6 +28,29 @@ func location(cache *CacheMU, uuid string, lang string) (LocationsLanguageAPI, e
 	return value, nil
 }
 
+func locationAsync(wg *sync.WaitGroup, cache *CacheMU, uuid string, lang string) (chan LocationsLanguageAPI, chan error) {
+	resultChan := make(chan LocationsLanguageAPI, 1)
+	errorChan := make(chan error, 1)
+
+	wg.Add(1)
+
+	go func(wg *sync.WaitGroup, cache *CacheMU, uuid string, lang string, resultChan chan LocationsLanguageAPI, errorChan chan error) {
+		defer wg.Done()
+		defer close(resultChan)
+		defer close(errorChan)
+
+		result, err := location(cache, uuid, lang)
+		if err != nil {
+			errorChan <- err
+		} else {
+			resultChan <- result
+			errorChan <- nil
+		}
+
+	}(wg, cache, uuid, lang, resultChan, errorChan)
+	return resultChan, errorChan
+}
+
 func findLocation(cache *CacheMU, uuid string, lang string) ([]LocationsLanguageAPI, error) {
 	cache.LockLocations.RLock()
 	defer cache.LockLocations.RUnlock()
@@ -31,23 +58,31 @@ func findLocation(cache *CacheMU, uuid string, lang string) ([]LocationsLanguage
 	toReturn := make([]LocationsLanguageAPI, 0)
 
 	if lang == "" {
-		value, err := location(cache, uuid, "EN")
-		if err != nil {
-			return nil, err
-		}
-		toReturn = append(toReturn, value)
+		wg := &sync.WaitGroup{}
 
-		value, err = location(cache, uuid, "ES")
-		if err != nil {
-			return nil, err
-		}
-		toReturn = append(toReturn, value)
+		location2Chan, error2Chan := locationAsync(wg, cache, uuid, "ES")
 
-		value, err = location(cache, uuid, "FR")
-		if err != nil {
-			return nil, err
+		location3Chan, error3Chan := locationAsync(wg, cache, uuid, "EN")
+
+		location4Chan, error4Chan := locationAsync(wg, cache, uuid, "FR")
+
+		wg.Wait()
+
+		err2 := <-error2Chan
+		err3 := <-error3Chan
+		err4 := <-error4Chan
+
+		if err2 != nil {
+			return toReturn, err2
+		} else if err3 != nil {
+			return toReturn, err3
+		} else if err4 != nil {
+			return toReturn, err4
 		}
-		toReturn = append(toReturn, value)
+
+		toReturn = append(toReturn, <-location2Chan)
+		toReturn = append(toReturn, <-location3Chan)
+		toReturn = append(toReturn, <-location4Chan)
 
 	} else {
 		value, err := location(cache, uuid, lang)
