@@ -1,10 +1,18 @@
 package main
 
-func getCacheLocation(cache *CacheMU, uuid string, lang string) {
+func findLocation(cache *CacheMU, uuid string, lang string) ([]LocationsLanguage, error) {
+	cache.LockLocations.RLock()
+	defer cache.LockLocations.RUnlock()
 
+	value, check := cache.Cache.Locations[uuid]
+
+	if check == false {
+
+	}
+	return value, nil
 }
 
-func getCacheIP(cache *CacheMU, ip string, lang string) {
+func findIP(cache *CacheMU, ip string) (IpLocation, error) {
 	cache.LockIP.RLock()
 	defer cache.LockIP.RUnlock()
 
@@ -13,5 +21,5 @@ func getCacheIP(cache *CacheMU, ip string, lang string) {
 	if check == false {
 
 	}
-	getCacheLocation(cache, value.Uuid, lang)
+	return value, nil
 }

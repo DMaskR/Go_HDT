@@ -6,6 +6,34 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func getIpLocationAPI(cache *CacheMU, ip string, lang string) (IpLocationAPI, error) {
+	toReturn := IpLocationAPI{
+		Ip:        "",
+		Locations: nil,
+	}
+
+	ipLoc, err := findIP(cache, ip)
+
+	if err != nil {
+		return toReturn, err
+	}
+	if ipLoc.Ip == "" {
+		return toReturn, nil
+	}
+	toReturn.Ip = ipLoc.Ip
+
+	loc, err := findLocation(cache, ipLoc.Uuid, lang)
+
+	if err != nil {
+		return toReturn, err
+	}
+	if loc == nil {
+		return toReturn, nil
+	}
+
+	return toReturn, nil
+}
+
 func getLocationIP(cache *CacheMU) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 		ip := c.Query("ip")
@@ -25,7 +53,30 @@ func getLocationIP(cache *CacheMU) gin.HandlerFunc {
 				return
 			}
 
-			getCacheIP(cache, ipv4Net.String(), language)
+			result, err := getIpLocationAPI(cache, ipv4Net.String(), language)
+
+			if err != nil {
+				c.JSON(500, gin.H{
+					"message": "Internal problem",
+				})
+				return
+			}
+
+			if result.Ip == "" {
+				c.JSON(404, gin.H{
+					"message": "Cannot find IP",
+				})
+				return
+			}
+
+			if result.Locations == nil {
+				c.JSON(404, gin.H{
+					"message": "Cannot find Location of the ID",
+				})
+				return
+			}
+
+			c.JSON(200, result)
 		}
 	}
 
