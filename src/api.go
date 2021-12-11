@@ -30,6 +30,7 @@ func getIpLocationAPI(cache *CacheMU, ip string, lang string) (IpLocationAPI, er
 	if loc == nil {
 		return toReturn, nil
 	}
+	toReturn.Locations = loc
 
 	return toReturn, nil
 }
@@ -64,7 +65,7 @@ func getLocationIP(cache *CacheMU) gin.HandlerFunc {
 
 			if err != nil {
 				c.JSON(500, gin.H{
-					"message": "Internal problem",
+					"message": err.Error(),
 				})
 				return
 			}
