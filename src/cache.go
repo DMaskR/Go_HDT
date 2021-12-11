@@ -3,8 +3,12 @@ package main
 func findLocation(cache *CacheMU, uuid string, lang string) ([]LocationsLanguage, error) {
 	cache.LockLocations.RLock()
 	defer cache.LockLocations.RUnlock()
+	var value []LocationsLanguage = nil
+	var check bool = false
 
-	value, check := cache.Cache.Locations[uuid]
+	if cache.Cache.Locations != nil {
+		//value, check = cache.Cache.Locations[uuid]
+	}
 
 	if check == false {
 
@@ -15,8 +19,12 @@ func findLocation(cache *CacheMU, uuid string, lang string) ([]LocationsLanguage
 func findIP(cache *CacheMU, ip string) (IpLocation, error) {
 	cache.LockIP.RLock()
 	defer cache.LockIP.RUnlock()
+	value := IpLocation{Ip: "", Uuid: ""}
+	var check bool = false
 
-	value, check := cache.Cache.Ip[ip]
+	if cache.Cache.Locations != nil {
+		value, check = cache.Cache.Ip[ip]
+	}
 
 	if check == false {
 
