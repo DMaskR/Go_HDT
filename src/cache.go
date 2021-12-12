@@ -24,6 +24,7 @@ func addResultInCache(cache *CacheMU, ip IpLocation, loc []LocationsLanguageAPI)
 				lang.Locations = make(map[string]Location)
 			}
 			lang.Locations[element.Locations.Uuid] = element.Locations
+			cache.Cache.Locations[element.Name] = lang
 		}
 	}()
 }
