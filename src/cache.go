@@ -4,6 +4,30 @@ import (
 	"sync"
 )
 
+func addResultInCache(cache *CacheMU, ip IpLocation, loc []LocationsLanguageAPI) {
+	go func() {
+		cache.LockIP.Lock()
+		defer cache.LockIP.Unlock()
+
+		cache.Cache.Ip[ip.Ip] = ip
+	}()
+
+	go func() {
+		cache.LockLocations.Lock()
+		defer cache.LockLocations.Unlock()
+
+		for _, element := range loc {
+			lang := cache.Cache.Locations[element.Name]
+			lang.Name = element.Name
+
+			if lang.Locations == nil {
+				lang.Locations = make(map[string]Location)
+			}
+			lang.Locations[element.Locations.Uuid] = element.Locations
+		}
+	}()
+}
+
 func location(cache *CacheMU, uuid string, lang string) (LocationsLanguageAPI, error) {
 	locate := Location{}
 	value := LocationsLanguageAPI{Name: lang, Locations: locate}

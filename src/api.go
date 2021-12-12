@@ -32,6 +32,8 @@ func getIpLocationAPI(cache *CacheMU, ip string, lang string) (IpLocationAPI, er
 	}
 	toReturn.Locations = loc
 
+	addResultInCache(cache, ipLoc, loc)
+
 	return toReturn, nil
 }
 

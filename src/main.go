@@ -15,8 +15,8 @@ func AllDataToCacheMu(data AllData) CacheMU {
 func main() {
 
 	allData := AllData{
-		Ip:        nil,
-		Locations: nil,
+		Ip:        make(map[string]IpLocation),
+		Locations: make(map[string]LocationsLanguage),
 	}
 
 	cache := AllDataToCacheMu(allData)
