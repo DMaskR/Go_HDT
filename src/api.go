@@ -6,35 +6,35 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func getIpLocationAPI(cache *CacheMU, ip string, lang string) (IpLocationAPI, error) {
+func getIpLocationAPI(cache *CacheMU, ip string, lang string) (IpLocationAPI, string, map[string]string, error) {
 	toReturn := IpLocationAPI{
 		Ip:        "",
 		Locations: nil,
 	}
 
-	ipLoc, err := findIP(cache, ip)
+	ipLoc, toFindIP, err := findIP(cache, ip)
 
 	if err != nil {
-		return toReturn, err
+		return toReturn, "", nil, err
 	}
 	if ipLoc.Ip == "" {
-		return toReturn, nil
+		return toReturn, "", nil, nil
 	}
 	toReturn.Ip = ipLoc.Ip
 
-	loc, err := findLocation(cache, ipLoc.Uuid, lang)
+	loc, toFindLoc, err := findLocation(cache, ipLoc.Uuid, lang)
 
 	if err != nil {
-		return toReturn, err
+		return toReturn, "", nil, err
 	}
 	if loc == nil {
-		return toReturn, nil
+		return toReturn, "", nil, nil
 	}
 	toReturn.Locations = loc
 
 	addResultInCache(cache, ipLoc, loc)
 
-	return toReturn, nil
+	return toReturn, toFindIP, toFindLoc, nil
 }
 
 func getLocationIP(cache *CacheMU) gin.HandlerFunc {
@@ -63,7 +63,7 @@ func getLocationIP(cache *CacheMU) gin.HandlerFunc {
 				return
 			}
 
-			result, err := getIpLocationAPI(cache, ipv4Net.String(), language)
+			result, toFindIP, toFindLoc, err := getIpLocationAPI(cache, ipv4Net.String(), language)
 
 			if err != nil {
 				c.JSON(500, gin.H{
@@ -86,6 +86,11 @@ func getLocationIP(cache *CacheMU) gin.HandlerFunc {
 				return
 			}
 
+			c.Keys = make(map[string]interface{})
+
+			c.Keys["IP"] = toFindIP
+			c.Keys["Loc"] = toFindLoc
+
 			c.JSON(200, result)
 		}
 	}
@@ -96,6 +101,9 @@ func getLocationIP(cache *CacheMU) gin.HandlerFunc {
 func putLocation(cache *CacheMU) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 
+		c.JSON(200, gin.H{
+			"message": "OK",
+		})
 	}
 
 	return gin.HandlerFunc(fn)
